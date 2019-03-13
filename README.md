@@ -1,2 +1,1 @@
-# MazeProject
 # lab5
