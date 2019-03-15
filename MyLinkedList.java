@@ -80,7 +80,7 @@ public class MyLinkedList<T> extends AbstractList<T>  {
 
     }
 
-    public MyLinkedList<T>() {
+    public MyLinkedList() {
     	head = new Node(null);
     	tail = new Node(null);
     	size = 0;
@@ -91,27 +91,99 @@ public class MyLinkedList<T> extends AbstractList<T>  {
     }
 
     private Node getNth(int index) {
-    	for (int i = 0; i <= index; i++) {
-    		Node temp = head.next;
-    		
+    	Node temp = head.next;
+    	for (int i = 0; i < index; i++) {
+    		temp = temp.next;
     	}
+    	return temp;
     }
     
     public void add(int index, T data) {
-    	Node newNode = new Node(data);
-    	
+    	if (index > size || index < 0) {
+    		throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+    	} else if (data == null) {
+    		throw new NullPointerException("Cannot add null to list");
+    	} else {
+	    	Node newNode = new Node(data);
+	    	Node rightNode = getNth(index);
+	    	Node leftNode = rightNode.prev;
+	    	leftNode.next = newNode;
+	    	rightNode.prev = newNode;
+	    	newNode.prev = leftNode;
+	    	newNode.next = rightNode;
+	    	size++;
+    	}
     }
 
+    public boolean add(T data) {
+    	if (data == null) {
+    		throw new NullPointerException("Cannot add null to list");
+    	}
+    	else {
+			Node newNode = new Node(data);
+	    	Node rightNode = tail;
+	    	Node leftNode = tail.prev;
+	    	leftNode.next = newNode;
+	    	rightNode.prev = newNode;
+	    	newNode.prev = leftNode;
+	    	newNode.next = rightNode;
+	    	size++;
+    	}
+    	return true;
+    }
+    
+    public T set(int index, T data) {
+       	if (index >= size || index < 0) {
+    		throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+    	} else if (data == null) {
+    		throw new NullPointerException("Cannot add null to list");
+    	} else {
+    		Node nodeToChange = getNth(index);
+    		T tempData = nodeToChange.data;
+    		nodeToChange.data = data;
+           	return tempData;
+    	}
+    }
+    
+    public T remove(int index) {
+    	if (index >= size || index < 0) {
+    		throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+    	} else {
+    		Node nodeToRemove = getNth(index);
+    		T tempData = nodeToRemove.data;
+    		nodeToRemove.prev = nodeToRemove.next;
+    		nodeToRemove.next = nodeToRemove.prev;
+    		size--;
+    		return tempData;
+    	}
+    }
+    
+    public void clear() {
+    	head.next = tail;
+    	tail.prev = head;
+    	size = 0;
+    }
+    
+    public boolean isEmpty() {
+    	if (size == 0) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
+    
 	@Override
 	public T get(int index) {
-		// TODO Auto-generated method stub
-		return null;
+	   	if (index >= size || index < 0) {
+    		throw new IndexOutOfBoundsException("Index " + index + " out of bounds.");
+	   	} else {
+	   		Node nthNode = getNth(index);
+	   		return nthNode.data;
+	   	}
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 }
-
