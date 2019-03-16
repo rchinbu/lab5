@@ -1,5 +1,7 @@
 import static org.junit.Assert.*;
 
+import java.util.ListIterator;
+
 import org.junit.Test;
 
 public class MyLinkedListTest {
@@ -82,6 +84,25 @@ public class MyLinkedListTest {
 		testList.remove(0);
 		testList.remove(0);
 		assertTrue(testList.isEmpty());
+	}
+	
+	@Test
+	public void testIterator() {
+		MyLinkedList<Integer> testList = new MyLinkedList<Integer>();
+		testList.add(1);
+		testList.add(2);
+		ListIterator<Integer> iterator = testList.listIterator();
+		assertTrue(iterator.hasNext());
+		assertTrue(iterator.next() == 1);
+		assertEquals(iterator.nextIndex(), 1);
+		assertTrue(iterator.next() == 2);
+		assertFalse(iterator.hasNext());
+		assertEquals(iterator.nextIndex(), 2);
+		assertTrue(iterator.previous() == 2);
+		assertEquals(iterator.previousIndex(), 0);
+		assertTrue(iterator.previous() == 1);
+		assertEquals(iterator.previousIndex(), -1);
+		iterator.add(5);
 	}
 }
 

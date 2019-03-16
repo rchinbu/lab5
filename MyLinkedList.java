@@ -1,7 +1,3 @@
-/**
- * TODO - your comments here
- */
-
 import java.util.*;
 
 public class MyLinkedList<T> extends AbstractList<T>  {
@@ -9,6 +5,7 @@ public class MyLinkedList<T> extends AbstractList<T>  {
 	Node head;
 	Node tail;
 	int size;
+	int changes = 0;
 
     protected class Node {
         T data;
@@ -20,64 +17,158 @@ public class MyLinkedList<T> extends AbstractList<T>  {
         }
     }
 
-    protected class MyListIterator implements ListIterator<T> {
+    protected class MyLinkedListIterator implements ListIterator<T> {
+    	MyLinkedList<T> ourList;
+    	Node prevNode;
+    	Node nextNode;
+    	int changes = 0;
+    	int currentIndex = 0;
+    	int direction = 0;
+    	// forward : 1
+    	// backwards : 2
+    	// neither : 0
+    	
+    	public MyLinkedListIterator(MyLinkedList<T> ourList) {
+    		this.ourList = ourList;
+    		this.prevNode = ourList.head;
+    		this.nextNode = prevNode.next;
+    	}
 
-		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			return false;
+			if (nextNode == tail) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 
 		@Override
 		public T next() {
-			// TODO Auto-generated method stub
-			return null;
+			if (! this.hasNext()) {
+				throw new NoSuchElementException("No more elements in the list!");
+			} else {
+				nextNode = nextNode.next;
+				prevNode = prevNode.next;
+				currentIndex++;
+				direction = 1;
+				return prevNode.data;
+				
+			}
 		}
 
 		@Override
 		public boolean hasPrevious() {
-			// TODO Auto-generated method stub
-			return false;
+			if (prevNode == head) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 
 		@Override
 		public T previous() {
-			// TODO Auto-generated method stub
-			return null;
+			if (! this.hasPrevious()) {
+				throw new NoSuchElementException("You've already reached the beginning of the list!");
+			} else {
+				prevNode = prevNode.prev;
+				nextNode = nextNode.prev;
+				currentIndex--;
+				direction = 3;
+				return nextNode.data;
+			}
 		}
 
 		@Override
 		public int nextIndex() {
-			// TODO Auto-generated method stub
-			return 0;
+			return currentIndex;
 		}
 
 		@Override
 		public int previousIndex() {
-			// TODO Auto-generated method stub
-			return 0;
+			return currentIndex - 1;
 		}
 
 		@Override
 		public void remove() {
-			// TODO Auto-generated method stub
-			
+			if (this.changes == ourList.changes) {
+				if(direction == 1) {
+					if(this.hasNext()) {
+						ourList.remove(currentIndex - 1);
+						prevNode = nextNode.prev;
+						currentIndex--;
+						this.changes++;
+						ourList.changes++;
+					} else {
+						throw new IndexOutOfBoundsException();
+					}
+				} else if (direction == 2) {
+					if(this.hasPrevious()) {
+						ourList.remove(currentIndex);
+						nextNode = prevNode.next;
+						this.changes++;
+						ourList.changes++;
+					} else {
+						throw new IndexOutOfBoundsException();
+					}
+				} else {
+					throw new IllegalStateException();
+				}
+			}
 		}
 
 		@Override
-		public void set(T e) {
-			// TODO Auto-generated method stub
-			
+		public void set(T element) {
+			if (this.changes == ourList.changes) {
+				if(direction == 1) {
+					ourList.set(currentIndex - 1, element);
+					this.changes++;
+					ourList.changes++;
+				} else if (direction == 2) {
+					ourList.set(currentIndex, element);
+					this.changes++;
+					ourList.changes++;
+				} else {
+					throw new IllegalStateException();
+				}
+			}
 		}
 
 		@Override
-		public void add(T e) {
-			// TODO Auto-generated method stub
-			
+		public void add(T element) {
+			if (this.changes == ourList.changes) {
+				if(direction == 1) {
+					if(this.hasNext()) {
+						ourList.add(currentIndex, element);
+						prevNode = nextNode.prev;
+						currentIndex++;
+						this.changes++;
+						ourList.changes++;
+					} else {
+						throw new IndexOutOfBoundsException();
+					}
+				} else if (direction == 2) {
+					if(this.hasPrevious()) {
+						ourList.add(currentIndex+1, element);
+						nextNode = prevNode.next;
+						this.changes++;
+						ourList.changes++;
+					} else {
+						throw new IndexOutOfBoundsException();
+					}
+				} else {
+					throw new IllegalStateException();
+				}
+				direction = 0;
+			}
 		}
-
-        // TODO - your code here
-
+    }
+    
+    public ListIterator<T> listIterator() {
+    	return new MyLinkedListIterator(this);
+    }
+    
+    public Iterator<T> iterator() {
+    	return new MyLinkedListIterator(this);
     }
 
     public MyLinkedList() {
